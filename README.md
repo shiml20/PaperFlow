@@ -93,6 +93,11 @@ The product stance is simple: **report first, chat second, evidence always**.
 ## Quickstart
 
 > Requirements: Python 3.9+, Node.js 18+, and a DeepSeek API key for real Agent parsing.
+> Windows users additionally need tmux (provided by psmux): `winget install psmux` (registered as the `tmux` command after install).
+
+**All Windows commands are written for CMD (`cmd.exe`).**
+
+**Linux / macOS**
 
 ```bash
 git clone https://github.com/shiml20/PaperFlow.git
@@ -103,14 +108,35 @@ cd paperflow
 ./run-dev.sh --install
 ```
 
+**Windows (CMD)**
+
+```cmd
+git clone https://github.com/shiml20/PaperFlow.git
+cd PaperFlow
+
+set DEEPSEEK_API_KEY=your-deepseek-api-key
+cd paperflow
+run-dev.bat --install
+```
+
 Then open `http://127.0.0.1:5173`, import a PDF or arXiv URL, and open the Workspace.
 
 If dependencies are already installed:
+
+**Linux / macOS**
 
 ```bash
 export DEEPSEEK_API_KEY="your-deepseek-api-key"
 cd paperflow
 ./run-dev.sh
+```
+
+**Windows (CMD)**
+
+```cmd
+set DEEPSEEK_API_KEY=your-deepseek-api-key
+cd paperflow
+run-dev.bat
 ```
 
 ---
@@ -158,6 +184,8 @@ Without a DeepSeek key, the backend reports `Agent not configured` and cannot pr
 
 ### Backend
 
+**Linux / macOS**
+
 ```bash
 cd paperflow/backend
 python3 -m venv .venv
@@ -171,10 +199,35 @@ export DEEPSEEK_REPORT_READ_TIMEOUT="180"
 uvicorn app.main:app --reload
 ```
 
+**Windows (CMD)**
+
+```cmd
+cd paperflow\backend
+python -m venv .venv
+.venv\Scripts\activate.bat
+pip install -e .[dev]
+
+set DEEPSEEK_API_KEY=your-key
+set DEEPSEEK_MODEL=deepseek-v4-flash
+set DEEPSEEK_REPORT_READ_TIMEOUT=180
+
+uvicorn app.main:app --reload
+```
+
 ### Web Frontend
+
+**Linux / macOS**
 
 ```bash
 cd paperflow/frontend
+npm install
+npm run dev
+```
+
+**Windows (CMD)**
+
+```cmd
+cd paperflow\frontend
 npm install
 npm run dev
 ```
@@ -185,6 +238,8 @@ Open `http://localhost:5173`.
 
 Paperflow also ships a Textual-based terminal UI that talks to the same backend.
 
+**Linux / macOS**
+
 ```bash
 cd paperflow/backend && . .venv/bin/activate
 pip install -e ../tui
@@ -193,6 +248,21 @@ paperflow-tui
 # or
 PAPERFLOW_BASE_URL=http://127.0.0.1:8000 paperflow-tui
 # or
+python -m paperflow_tui
+```
+
+**Windows (CMD)**
+
+```cmd
+cd paperflow\backend
+.venv\Scripts\activate.bat
+pip install -e ..\tui
+
+paperflow-tui
+rem or
+set PAPERFLOW_BASE_URL=http://127.0.0.1:8000
+paperflow-tui
+rem or
 python -m paperflow_tui
 ```
 
@@ -345,7 +415,8 @@ PaperFlow/
 ├── data/                                 ← local user data, git-ignored
 ├── design_docs/                         ← local design / PRD notes
 └── paperflow/
-    ├── run-dev.sh                       ← starts backend + frontend
+    ├── run-dev.sh                       ← starts backend + frontend (Linux / macOS)
+    ├── run-dev.bat                      ← starts backend + frontend (Windows CMD + tmux)
     ├── backend/                         ← FastAPI + PaperAgent harness
     ├── frontend/                        ← React + Vite + TypeScript web client
     └── tui/                             ← Textual terminal client
@@ -354,6 +425,8 @@ PaperFlow/
 ---
 
 ## Testing
+
+**Linux / macOS**
 
 ```bash
 # Backend
@@ -368,6 +441,24 @@ npm run build
 
 # TUI
 cd ../tui
+pytest -q
+```
+
+**Windows (CMD)**
+
+```cmd
+rem Backend
+cd paperflow\backend
+.venv\Scripts\activate.bat
+pytest -q
+
+rem Frontend
+cd ..\frontend
+npm test
+npm run build
+
+rem TUI
+cd ..\tui
 pytest -q
 ```
 

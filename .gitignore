@@ -88,3 +88,5 @@ design_docs/
 # Local PR / launch copy drafts (not part of the open-source repo)
 docs/pr-plan.md
 docs/launch-copy.md
+
+mytest_script

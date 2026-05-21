@@ -1078,7 +1078,6 @@ function Workspace({
 }) {
   const text = UI_TEXT[locale];
   const displayTitle = report?.paper_title ?? paper.title;
-  const [question, setQuestion] = useState("");
   const [chat, setChat] = useState<PaperChatResponse | null>(null);
   const [chatStatus, setChatStatus] = useState<ChatPanelStatus>("idle");
   const [notePath, setNotePath] = useState<string | null>(paper.note_path ?? null);
@@ -1255,13 +1254,12 @@ function Workspace({
     window.addEventListener("pointercancel", handleUp);
   }
 
-  async function askAgentChat() {
+  async function askAgentChat(question: string) {
     if (!question.trim()) {
       return;
     }
     const firstEvidence = selectedClaim?.evidence?.[0];
     const userQuestion = question;
-    setQuestion("");
     setChatStatus("running");
     setChat({
       id: `local-${Date.now()}`,
@@ -1456,11 +1454,9 @@ function Workspace({
           onAsk={askAgentChat}
           onExport={exportNote}
           onEvidenceOpen={openEvidenceInPdf}
-          onQuestionChange={setQuestion}
           onRerun={onRerun}
           onResizeStart={startRailResize}
           paper={paper}
-          question={question}
           selectedClaim={selectedClaim}
         />
       </main>
@@ -1676,11 +1672,9 @@ function Workspace({
         onAsk={askAgentChat}
         onExport={exportNote}
         onEvidenceOpen={openEvidenceInPdf}
-        onQuestionChange={setQuestion}
         onRerun={onRerun}
         onResizeStart={startRailResize}
         paper={paper}
-        question={question}
         selectedClaim={selectedClaim}
       />
     </main>
@@ -2152,11 +2146,9 @@ function Rail({
   onAsk,
   onExport,
   onEvidenceOpen,
-  onQuestionChange,
   onRerun,
   onResizeStart,
   paper,
-  question,
   selectedClaim,
 }: {
   agentConfig: AgentConfig | null;
@@ -2168,17 +2160,16 @@ function Rail({
   notePath: string | null;
   onAgentConfigChange: (draft: AgentConfigUpdate) => void;
   onAgentConfigSave: () => void;
-  onAsk: () => Promise<void>;
+  onAsk: (question: string) => Promise<void>;
   onExport: () => Promise<void>;
   onEvidenceOpen: (evidence: Evidence) => void;
-  onQuestionChange: (question: string) => void;
   onRerun: () => void;
   onResizeStart: (event: ReactPointerEvent<HTMLButtonElement>) => void;
   paper: Paper;
-  question: string;
   selectedClaim: Claim | null;
 }) {
   const text = UI_TEXT[locale];
+  const [question, setQuestion] = useState("");
   return (
     <aside className="workspace-rail">
       <button
@@ -2317,10 +2308,10 @@ function Rail({
           <input
             placeholder={text.askPlaceholder}
             value={question}
-            onChange={(event) => onQuestionChange(event.target.value)}
+            onChange={(event) => setQuestion(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                void onAsk();
+                const q = question; setQuestion(""); void onAsk(q);
               }
             }}
           />
@@ -2328,7 +2319,7 @@ function Rail({
             type="button"
             className="btn-link"
             disabled={!question.trim() || chatStatus === "running"}
-            onClick={() => void onAsk()}
+            onClick={() => { const q = question; setQuestion(""); void onAsk(q); }}
           >
             {text.ask}
           </button>

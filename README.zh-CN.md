@@ -92,6 +92,11 @@ Paperflow 把一篇论文变成可追溯的研究工作台：先生成结构化�
 ## 快速开始
 
 > 需要 Python 3.9+、Node.js 18+，以及用于真实 Agent 解析的 DeepSeek API Key。
+> Windows 用户额外需要 tmux（由 psmux 提供）：`winget install psmux`（安装后默认注册为 `tmux` 命令）。
+
+**Windows 命令均以 CMD（`cmd.exe`）为工作环境。**
+
+**Linux / macOS**
 
 ```bash
 git clone https://github.com/shiml20/PaperFlow.git
@@ -102,14 +107,35 @@ cd paperflow
 ./run-dev.sh --install
 ```
 
+**Windows (CMD)**
+
+```cmd
+git clone https://github.com/shiml20/PaperFlow.git
+cd PaperFlow
+
+set DEEPSEEK_API_KEY=your-deepseek-api-key
+cd paperflow
+run-dev.bat --install
+```
+
 然后打开 `http://127.0.0.1:5173`，导入 PDF 或 arXiv URL，进入 Workspace。
 
 如果依赖已经安装过：
+
+**Linux / macOS**
 
 ```bash
 export DEEPSEEK_API_KEY="your-deepseek-api-key"
 cd paperflow
 ./run-dev.sh
+```
+
+**Windows (CMD)**
+
+```cmd
+set DEEPSEEK_API_KEY=your-deepseek-api-key
+cd paperflow
+run-dev.bat
 ```
 
 ---
@@ -157,6 +183,8 @@ model = "deepseek-v4-flash"
 
 ### 后端
 
+**Linux / macOS**
+
 ```bash
 cd paperflow/backend
 python3 -m venv .venv
@@ -170,10 +198,35 @@ export DEEPSEEK_REPORT_READ_TIMEOUT="180"
 uvicorn app.main:app --reload
 ```
 
+**Windows (CMD)**
+
+```cmd
+cd paperflow\backend
+python -m venv .venv
+.venv\Scripts\activate.bat
+pip install -e .[dev]
+
+set DEEPSEEK_API_KEY=your-key
+set DEEPSEEK_MODEL=deepseek-v4-flash
+set DEEPSEEK_REPORT_READ_TIMEOUT=180
+
+uvicorn app.main:app --reload
+```
+
 ### Web 前端
+
+**Linux / macOS**
 
 ```bash
 cd paperflow/frontend
+npm install
+npm run dev
+```
+
+**Windows (CMD)**
+
+```cmd
+cd paperflow\frontend
 npm install
 npm run dev
 ```
@@ -184,6 +237,8 @@ npm run dev
 
 Paperflow 也提供 Textual 终端 UI，连接同一个后端。
 
+**Linux / macOS**
+
 ```bash
 cd paperflow/backend && . .venv/bin/activate
 pip install -e ../tui
@@ -192,6 +247,21 @@ paperflow-tui
 # 或
 PAPERFLOW_BASE_URL=http://127.0.0.1:8000 paperflow-tui
 # 或
+python -m paperflow_tui
+```
+
+**Windows (CMD)**
+
+```cmd
+cd paperflow\backend
+.venv\Scripts\activate.bat
+pip install -e ..\tui
+
+paperflow-tui
+rem 或
+set PAPERFLOW_BASE_URL=http://127.0.0.1:8000
+paperflow-tui
+rem 或
 python -m paperflow_tui
 ```
 
@@ -343,7 +413,8 @@ PaperFlow/
 ├── data/                                 ← 本地用户数据，git-ignored
 ├── design_docs/                         ← 本地设计 / PRD 笔记
 └── paperflow/
-    ├── run-dev.sh                       ← 启动 backend + frontend
+    ├── run-dev.sh                       ← 启动 backend + frontend（Linux / macOS）
+    ├── run-dev.bat                      ← 启动 backend + frontend（Windows CMD + tmux）
     ├── backend/                         ← FastAPI + PaperAgent harness
     ├── frontend/                        ← React + Vite + TypeScript web client
     └── tui/                             ← Textual terminal client
@@ -352,6 +423,8 @@ PaperFlow/
 ---
 
 ## 测试
+
+**Linux / macOS**
 
 ```bash
 # Backend
@@ -366,6 +439,24 @@ npm run build
 
 # TUI
 cd ../tui
+pytest -q
+```
+
+**Windows (CMD)**
+
+```cmd
+rem Backend
+cd paperflow\backend
+.venv\Scripts\activate.bat
+pytest -q
+
+rem Frontend
+cd ..\frontend
+npm test
+npm run build
+
+rem TUI
+cd ..\tui
 pytest -q
 ```
 
